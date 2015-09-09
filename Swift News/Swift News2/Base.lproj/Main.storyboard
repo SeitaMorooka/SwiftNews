@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="24a-Hg-VGN">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--Swift News-->
+        <scene sceneID="mgo-na-gFj">
+            <objects>
+                <tableViewController id="IPJ-Jw-D1f" customClass="ViewController" customModule="Swift_News2" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="LFh-XK-880">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="news" id="jjY-ZB-3ib">
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jjY-ZB-3ib" id="N7q-4P-WSX">
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="IPJ-Jw-D1f" id="PMe-Xe-syC"/>
+                            <outlet property="delegate" destination="IPJ-Jw-D1f" id="pC0-Wk-El2"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Swift News" id="wez-1q-Tp2">
+                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="Wq9-9b-0Cg">
+                            <connections>
+                                <action selector="refresh:" destination="IPJ-Jw-D1f" id="Rvr-zj-Ht2"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <segue destination="qKc-lo-Lkv" kind="show" identifier="detail" id="0DE-og-gVF"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="UqJ-LX-BCs" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="691" y="421"/>
+        </scene>
+        <!--Detail Controller-->
+        <scene sceneID="RIu-aX-Nwv">
+            <objects>
+                <viewController id="qKc-lo-Lkv" customClass="DetailController" customModule="Swift_News2" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="UeG-AZ-fbD"/>
+                        <viewControllerLayoutGuide type="bottom" id="eTW-8H-oa3"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="4bC-Xu-MnH">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="byM-mv-ppI">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="byM-mv-ppI" secondAttribute="trailing" constant="-16" id="Zbk-Lh-ZXw"/>
+                            <constraint firstItem="byM-mv-ppI" firstAttribute="leading" secondItem="4bC-Xu-MnH" secondAttribute="leadingMargin" constant="-16" id="eGn-E6-N8N"/>
+                            <constraint firstItem="byM-mv-ppI" firstAttribute="top" secondItem="4bC-Xu-MnH" secondAttribute="topMargin" id="gSj-Hn-Gan"/>
+                            <constraint firstItem="eTW-8H-oa3" firstAttribute="top" secondItem="byM-mv-ppI" secondAttribute="bottom" id="zMX-kL-8dm"/>
+                        </constraints>
+                    </view>
+                    <toolbarItems>
+                        <barButtonItem title="Twitter" id="j9b-9l-vfG">
+                            <connections>
+                                <action selector="Twitter:" destination="qKc-lo-Lkv" id="yEC-DY-y3b"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="gBF-XE-ABw"/>
+                        <barButtonItem title="Facebook" id="Lxm-CE-U1c">
+                            <connections>
+                                <action selector="Facebook:" destination="qKc-lo-Lkv" id="Vqc-SG-A2g"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
+                    <connections>
+                        <outlet property="webView" destination="byM-mv-ppI" id="AMr-CX-6ml"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="msP-Os-bb6" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1444" y="421"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="V1c-FK-MOw">
+            <objects>
+                <navigationController toolbarHidden="NO" id="24a-Hg-VGN" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Sa5-su-NjB">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="Nvo-l1-dcZ">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </toolbar>
+                    <connections>
+                        <segue destination="IPJ-Jw-D1f" kind="relationship" relationship="rootViewController" id="HqG-Of-qbU"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ls7-5b-d56" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-129" y="421"/>
+        </scene>
+    </scenes>
+</document>
