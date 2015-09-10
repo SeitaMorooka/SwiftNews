@@ -10,13 +10,27 @@ import UIKit
 
 class ViewController: UITableViewController {
     
-    var entries = NSArray()
+    var entries = NSMutableArray()
     
-    let newsUrlString = "http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=http://news.yahoo.co.jp/pickup/domestic/rss.xml&num=8"
+    let newsUrlStrings = [
+        "http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=http://news.yahoo.co.jp/pickup/domestic/rss.xml&num=8",
+        "http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=http://news.yahoo.co.jp/pickup/world/rss.xml&num=8",
+        "http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=http://news.yahoo.co.jp/pickup/sports/rss.xml&num=8"
+        ]
     
+    let imageNames = [
+    "japan.jpg",
+    "sport.jpg",
+    "world.jpg",
+    ]
+
     @IBAction func refresh(sender: AnyObject) {
-        var url = NSURL(string: newsUrlString)!
+        entries.removeAllObjects()
         
+        
+        for newsUrlString in newsUrlStrings{
+            
+        var url = NSURL(string: newsUrlString)!
         var task = NSURLSession.sharedSession().dataTaskWithURL(url, completionHandler: { data, respinse, error in
             
             var dict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as! NSDictionary
@@ -24,17 +38,49 @@ class ViewController: UITableViewController {
             if var responseData = dict["responseData"] as? NSDictionary {
                 if var feed = responseData["feed"] as? NSDictionary {
                     if var entries = feed["entries"] as? NSArray {
-                        self.entries = entries
+                        
+                        var formatter = NSDateFormatter()
+                        formatter.locale = NSLocale(localeIdentifier: "en-US")
+                        formatter.dateFormat = "EEE, dd MMMM yyyy HH:mm:ss zzzz"
+                        
+                        for var i = 0; i < entries.count; i++ {
+                            var entry = entries[i] as! NSMutableDictionary
+                            
+                        entry["url"] = newsUrlString
+                            
+                            var dateStr = entry["publishedDate"] as! String
+                            var date = formatter.dateFromString(dateStr)
+                            entry["date"] = date
+                        }
+                        
+                        self.entries.addObjectsFromArray(entries as[AnyObject])
+                        
+                        self.entries.sortUsingComparator({ object1, object2 in
+                            var date1 = object1["date"] as! NSDate
+                            var date2 = object2["date"] as! NSDate
+                            
+                            var order = date1.compare(date2)
+                            
+                            if order == NSComparisonResult.OrderedAscending {
+                                return NSComparisonResult.OrderedAscending
+                            }
+                            else if order == NSComparisonResult.OrderedAscending {
+                                return NSComparisonResult.OrderedAscending
+                            }
+                            return order
+                        })
                     }
                 }
             }
             
             dispatch_async(dispatch_get_main_queue(),{
+                
                 self.tableView.reloadData()
                 
             })
         })
         task.resume()
+    }
     }
 
     override func viewDidLoad() {
@@ -54,19 +100,23 @@ class ViewController: UITableViewController {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath
         indexPath: NSIndexPath) -> UITableViewCell {
         
-        var cell = tableView.dequeueReusableCellWithIdentifier("news") as!
-            UITableViewCell
-            
-        
-            
-        //cell.backgroundColor = UIColor.blackColor()
-            
-        //cell.textLabel?.textColor = UIColor.whiteColor()
-            
+        var cell = tableView.dequeueReusableCellWithIdentifier("news") as! UITableViewCell
+
         var entry = entries[indexPath.row] as! NSDictionary
+         
+        var titleLabel = cell.viewWithTag(1) as! UILabel
+        titleLabel.text = entry["title"] as? String
             
-        cell.textLabel?.text = entry["title"] as? String
+        var dateLabel = cell.viewWithTag(3) as! UILabel
+        dateLabel.text = entry["publishedDate"] as? String
         
+        var urlString = entry["url"] as! String
+        var index = find(newsUrlStrings, urlString)
+        var imageName = imageNames[index!]
+        var image = UIImage(named: imageName)
+            
+        var imageView = cell.viewWithTag(4) as! UIImageView
+        imageView.image = image
         return cell
     }
     
