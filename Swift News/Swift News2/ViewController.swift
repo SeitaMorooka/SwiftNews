@@ -20,8 +20,8 @@ class ViewController: UITableViewController {
     
     let imageNames = [
     "japan.jpg",
-    "sport.jpg",
     "world.jpg",
+    "sport.jpg",
     ]
 
     @IBAction func refresh(sender: AnyObject) {
