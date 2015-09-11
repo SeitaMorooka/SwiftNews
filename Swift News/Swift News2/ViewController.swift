@@ -13,9 +13,9 @@ class ViewController: UITableViewController {
     var entries = NSMutableArray()
     
     let newsUrlStrings = [
-        "http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=http://news.yahoo.co.jp/pickup/domestic/rss.xml&num=8",
-        "http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=http://news.yahoo.co.jp/pickup/world/rss.xml&num=8",
-        "http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=http://news.yahoo.co.jp/pickup/sports/rss.xml&num=8"
+        "http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=http://www3.nhk.or.jp/rss/news/cat0.xml&num=8",
+        "http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=http://www3.nhk.or.jp/rss/news/cat6.xml&num=8",
+        "http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=http://www3.nhk.or.jp/rss/news/cat7.xml&num=8"
         ]
     
     let imageNames = [
@@ -26,61 +26,67 @@ class ViewController: UITableViewController {
 
     @IBAction func refresh(sender: AnyObject) {
         entries.removeAllObjects()
-        
-        
+    
+    
         for newsUrlString in newsUrlStrings{
-            
-        var url = NSURL(string: newsUrlString)!
-        var task = NSURLSession.sharedSession().dataTaskWithURL(url, completionHandler: { data, respinse, error in
-            
-            var dict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as! NSDictionary
-            
-            if var responseData = dict["responseData"] as? NSDictionary {
-                if var feed = responseData["feed"] as? NSDictionary {
-                    if var entries = feed["entries"] as? NSArray {
-                        
-                        var formatter = NSDateFormatter()
-                        formatter.locale = NSLocale(localeIdentifier: "en-US")
-                        formatter.dateFormat = "EEE, dd MMMM yyyy HH:mm:ss zzzz"
-                        
-                        for var i = 0; i < entries.count; i++ {
-                            var entry = entries[i] as! NSMutableDictionary
+    
+            var url = NSURL(string: newsUrlString)!
+            var task = NSURLSession.sharedSession().dataTaskWithURL(url, completionHandler: { data, respinse, error in
+    
+                var dict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as! NSDictionary
+    
+                if var responseData = dict["responseData"] as? NSDictionary {
+                    if var feed = responseData["feed"] as? NSDictionary {
+                        if var entries = feed["entries"] as? NSArray {
+    
+                            var formatter = NSDateFormatter()
+                            formatter.locale = NSLocale(localeIdentifier: "en-US")
+                            formatter.dateFormat = "EEE, dd MMMM yyyy HH:mm:ss zzzz"
                             
-                        entry["url"] = newsUrlString
+                            for var i = 0; i < entries.count; i++ {
+                                var entry = entries[i] as! NSMutableDictionary
+                                
+                                entry["url"] = newsUrlString
+                                
+                                var dateStr = entry["publishedDate"] as! String
+                                var date = formatter.dateFromString(dateStr)
+                                entry["date"] = date
+                            }
                             
-                            var dateStr = entry["publishedDate"] as! String
-                            var date = formatter.dateFromString(dateStr)
-                            entry["date"] = date
-                        }
-                        
-                        self.entries.addObjectsFromArray(entries as[AnyObject])
-                        
-                        self.entries.sortUsingComparator({ object1, object2 in
+                            self.entries.addObjectsFromArray(entries as[AnyObject])
+                            
+                            self.entries.sortUsingComparator({ object1, object2 in
+                                
                             var date1 = object1["date"] as! NSDate
                             var date2 = object2["date"] as! NSDate
-                            
+                                
                             var order = date1.compare(date2)
-                            
-                            if order == NSComparisonResult.OrderedAscending {
-                                return NSComparisonResult.OrderedAscending
-                            }
-                            else if order == NSComparisonResult.OrderedAscending {
-                                return NSComparisonResult.OrderedAscending
-                            }
-                            return order
-                        })
+                                
+                                if order == NSComparisonResult.OrderedAscending {
+                                    return NSComparisonResult.OrderedAscending
+                                }
+                                else if order == NSComparisonResult.OrderedAscending{
+                                    return NSComparisonResult.OrderedAscending
+                                }
+                                
+                                return order
+                            })
+                        }
                     }
                 }
-            }
-            
-            dispatch_async(dispatch_get_main_queue(),{
                 
-                self.tableView.reloadData()
+        
                 
-            })
-        })
-        task.resume()
-    }
+                dispatch_async(dispatch_get_main_queue(),{
+                    
+                    self.tableView.reloadData()
+                    
+                    })
+                })
+                    
+
+            task.resume()
+        }
     }
 
     override func viewDidLoad() {
@@ -101,15 +107,15 @@ class ViewController: UITableViewController {
         indexPath: NSIndexPath) -> UITableViewCell {
         
         var cell = tableView.dequeueReusableCellWithIdentifier("news") as! UITableViewCell
-
+            
         var entry = entries[indexPath.row] as! NSDictionary
          
         var titleLabel = cell.viewWithTag(1) as! UILabel
         titleLabel.text = entry["title"] as? String
-            
-        var dateLabel = cell.viewWithTag(3) as! UILabel
-        dateLabel.text = entry["publishedDate"] as? String
         
+        var descriptionLabel = cell.viewWithTag(2) as! UILabel
+        descriptionLabel.text = entry["contentSnippet"] as? String
+    
         var urlString = entry["url"] as! String
         var index = find(newsUrlStrings, urlString)
         var imageName = imageNames[index!]
@@ -131,4 +137,4 @@ class ViewController: UITableViewController {
                     detailController.entry = sender as! NSDictionary
                 }
             }
-    }
+}
